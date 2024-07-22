@@ -9,7 +9,8 @@ set (CMAKE_BUILD_TYPE Debug )
 include_directories( blinkt.out PRIVATE src )
 
 add_executable( blinkt.out
-                src/main.c)
+                src/main.c
+                src/spi.c)
 
 target_compile_options( blinkt.out
                         PUBLIC
