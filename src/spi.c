@@ -33,21 +33,9 @@ extern bool SPI_Init(const char * const device)
     {
         goto cleanup;
     }
-    
-    ret = ioctl(file, SPI_IOC_RD_MODE, &mode);
-    if(ret < 0)
-    {
-        goto cleanup;
-    }
 
     uint8_t bits_per_word = 0U;
     ret = ioctl(file, SPI_IOC_WR_BITS_PER_WORD, &bits_per_word);
-    if(ret < 0)
-    {
-        goto cleanup;
-    }
-    
-    ret = ioctl(file, SPI_IOC_RD_BITS_PER_WORD, &bits_per_word);
     if(ret < 0)
     {
         goto cleanup;
@@ -59,13 +47,7 @@ extern bool SPI_Init(const char * const device)
     if(ret < 0)
     {
         goto cleanup;
-    }
-    
-    ret = ioctl(file, SPI_IOC_RD_MAX_SPEED_HZ, &max_speed);
-    if(ret < 0)
-    {
-        goto cleanup;
-    }
+    }    
     
 cleanup:
     return success;
