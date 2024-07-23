@@ -12,39 +12,58 @@
 #include "spi.h"
 
 static struct spi_ioc_transfer spi;
-int file;
+int fd;
+
+static bool Configure(int * fd, unsigned long op, uint8_t data)
+{
+    bool success = true; 
+    int err = ioctl(*fd, op, &data);
+    
+    if(err < 0)
+    {
+        success = false;
+    }
+
+    return success;
+}
+
+static bool Configure32(int * fd, unsigned long op, uint32_t data)
+{
+    bool success = true; 
+    int err = ioctl(*fd, op, &data);
+    
+    if(err < 0)
+    {
+        success = false;
+    }
+
+    return success;
+}
 
 extern bool SPI_Init(const char * const device)
 {
     assert(device != NULL);
     bool success = false;
-    int ret = 0U;
 
     /* Attempt to open the SPI device */
-    file = open(device, O_RDWR);
-    if(file < 0)
+    fd = open(device, O_RDWR);
+    if(fd < 0)
     {
         goto cleanup;
     }
 
-    uint8_t mode = SPI_MODE_2 | SPI_NO_CS;
-    ret = ioctl(file, SPI_IOC_WR_MODE, &mode);
-    if(ret < 0)
+    if(!Configure(&fd, SPI_IOC_WR_MODE, SPI_MODE_2 | SPI_NO_CS))
     {
         goto cleanup;
     }
 
-    uint8_t bits_per_word = 0U;
-    ret = ioctl(file, SPI_IOC_WR_BITS_PER_WORD, &bits_per_word);
-    if(ret < 0)
+    /* 0 signifies 0 bits per word */
+    if(!Configure(&fd, SPI_IOC_WR_BITS_PER_WORD, 0U))
     {
         goto cleanup;
     }
     
-    uint32_t max_speed = 0x100000;
-    
-    ret = ioctl(file, SPI_IOC_WR_MAX_SPEED_HZ, &max_speed);
-    if(ret < 0)
+    if(!Configure32(&fd, SPI_IOC_WR_MAX_SPEED_HZ, 0x100000))
     {
         goto cleanup;
     }    
@@ -61,10 +80,9 @@ extern void SPI_Write(uint8_t * data, uint8_t len)
     memset(&spi, 0x00, sizeof(spi));
 
     spi.tx_buf = (unsigned long)data;
-    spi.rx_buf = (unsigned long)NULL;
     spi.len = len;
 
-    if(ioctl(file, SPI_IOC_MESSAGE(1), &spi) < 0)
+    if(ioctl(fd, SPI_IOC_MESSAGE(1), &spi) < 0)
     {
         /* failed to write */
         assert(false);
@@ -74,6 +92,6 @@ extern void SPI_Write(uint8_t * data, uint8_t len)
 
 extern void SPI_DeInit(void)
 {
-    close(file);
+    close(fd);
 }
 
