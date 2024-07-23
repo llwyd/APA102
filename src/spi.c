@@ -63,6 +63,11 @@ extern bool SPI_Init(const char * const device)
         goto cleanup;
     }
     
+    if(!Configure(&fd, SPI_IOC_WR_LSB_FIRST, 0U))
+    {
+        goto cleanup;
+    }
+
     if(!Configure32(&fd, SPI_IOC_WR_MAX_SPEED_HZ, 0x100000))
     {
         goto cleanup;
