@@ -4,9 +4,12 @@
 #include <stdbool.h>
 #include "spi.h"
 
-int main(void)
+int main(int argc, char **argv)
 {
-    printf("Hello, World\n");
+    (void)argc;
+    (void)argv;
+
     SPI_Init(NULL);
+    SPI_DeInit();
     return 0U;
 }
