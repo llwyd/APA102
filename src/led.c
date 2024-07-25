@@ -38,6 +38,18 @@ extern void LED_SetColour(uint8_t led, uint8_t r, uint8_t g, uint8_t b)
     led_array[led].b = b;
 }
 
+extern void LED_SetAll(uint8_t r, uint8_t g, uint8_t b, uint8_t s)
+{
+    for(uint8_t idx = 0U; idx < num_leds; idx++)
+    {
+        led_array[idx].r = r;
+        led_array[idx].g = g;
+        led_array[idx].b = b;
+
+        LED_SetBrightness(idx, s);
+    }
+}
+
 extern void LED_SetBrightness(uint8_t led, uint8_t b)
 {
     led_array[led].s = 0xe0 | b;
