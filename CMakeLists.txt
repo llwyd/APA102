@@ -10,6 +10,7 @@ include_directories( blinkt.out PRIVATE src )
 
 add_executable( blinkt.out
                 src/main.c
+                src/led.c
                 src/spi.c)
 
 target_compile_options( blinkt.out
