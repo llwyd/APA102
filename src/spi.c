@@ -11,6 +11,8 @@
 #include <unistd.h>
 #include "spi.h"
 
+
+#ifdef __arm__
 static struct spi_ioc_transfer spi;
 int fd;
 
@@ -39,11 +41,13 @@ static bool Configure32(int * fd, unsigned long op, uint32_t data)
 
     return success;
 }
+#endif
 
 extern bool SPI_Init(const char * const device)
 {
     assert(device != NULL);
     bool success = false;
+#ifdef __arm__
 
     /* Attempt to open the SPI device */
     fd = open(device, O_RDWR);
@@ -72,8 +76,9 @@ extern bool SPI_Init(const char * const device)
     {
         goto cleanup;
     }    
-    
+
 cleanup:
+#endif
     return success;
 }
 
@@ -82,6 +87,7 @@ extern void SPI_Write(uint8_t * data, uint8_t len)
     assert(data != NULL);
     assert(len > 0U);
 
+#ifdef __arm__
     memset(&spi, 0x00, sizeof(spi));
 
     spi.tx_buf = (unsigned long)data;
@@ -92,11 +98,14 @@ extern void SPI_Write(uint8_t * data, uint8_t len)
         /* failed to write */
         assert(false);
     }
+#endif
 }
 
 
 extern void SPI_DeInit(void)
 {
+#ifdef __arm__
     close(fd);
+#endif
 }
 
