@@ -12,6 +12,7 @@ typedef struct
     rgb_t rgb;
     uint8_t brightness;
     uint8_t num_leds;
+    char * device;
 }
 settings_t;
 
@@ -37,9 +38,10 @@ static bool ParseArgs(int argc, char ** argv, settings_t * settings)
 {
     int input_flags;
     bool num_leds_set = false;
+    bool device_set = false;
     memset(settings, 0x00, sizeof(settings_t));
     
-    while( ( input_flags = getopt( argc, argv, "r:g:b:s:n:" ) ) != -1 )
+    while( ( input_flags = getopt( argc, argv, "r:g:b:s:n:d:" ) ) != -1 )
     {
         switch( input_flags )
         {
@@ -69,39 +71,43 @@ static bool ParseArgs(int argc, char ** argv, settings_t * settings)
                 settings->brightness = ParseNumberU8(optarg); 
                 break;
             }
+            case 'd':
+            {
+                settings->device = optarg;
+                device_set = true;
+            }
             default:
                 break;
         }
     }
 
-    return num_leds_set;
+    return (num_leds_set && device_set);
 }
 
 int main(int argc, char **argv)
 {
-    (void)argc;
-    (void)argv;
     settings_t settings;
-    bool num_leds_set = ParseArgs(argc, argv, &settings);
+    bool parameters_set = ParseArgs(argc, argv, &settings);
 
-    if(num_leds_set)
+    if(parameters_set)
     {
+        printf("   device: %s\n", settings.device);
         printf(" num leds: %u\n", settings.num_leds);
         printf("intensity: %u\n", settings.brightness);
         printf("        r: 0x%x\n", settings.rgb.r);
         printf("        g: 0x%x\n", settings.rgb.g);
         printf("        b: 0x%x\n", settings.rgb.b);
+    
+        LED_Init(settings.device, settings.num_leds);
+        LED_SetAll(settings.rgb.r, settings.rgb.g, settings.rgb.b, settings.brightness);
+        LED_Refresh();
+        LED_Refresh();
+        LED_Close();
     }
     else
     {
-        printf("Number of LEDs not set\n");
+        printf("Number of LEDs or DEVICE not set\n");
     }
-    /*
-    LED_Init("/dev/spidev0.0", 8U);
-    LED_SetAll(0xFF,0x00,0x00,0xFF);
-    LED_Refresh();
-    LED_Refresh();
-    LED_Close();
-    */
+    
     return 0U;
 }
