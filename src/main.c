@@ -98,11 +98,13 @@ int main(int argc, char **argv)
         printf("        g: 0x%x\n", settings.rgb.g);
         printf("        b: 0x%x\n", settings.rgb.b);
     
+#ifdef __arm__
         LED_Init(settings.device, settings.num_leds);
-        LED_SetAll(settings.rgb.r, settings.rgb.g, settings.rgb.b, settings.brightness);
+        LED_SetAll(&settings.rgb, settings.brightness);
         LED_Refresh();
         LED_Refresh();
         LED_Close();
+#endif
     }
     else
     {

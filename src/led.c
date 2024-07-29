@@ -30,22 +30,22 @@ extern void LED_Init(const char * const device, uint8_t num)
     SPI_Init(device);
 }
 
-extern void LED_SetColour(uint8_t led, uint8_t r, uint8_t g, uint8_t b)
+extern void LED_SetColour(uint8_t led, const rgb_t * const rgb)
 {
     assert(led < num_leds);
     
-    led_array[led].rgb.r = r;
-    led_array[led].rgb.g = g;
-    led_array[led].rgb.b = b;
+    led_array[led].rgb.r = rgb->r;
+    led_array[led].rgb.g = rgb->g;
+    led_array[led].rgb.b = rgb->b;
 }
 
-extern void LED_SetAll(uint8_t r, uint8_t g, uint8_t b, uint8_t s)
+extern void LED_SetAll(const rgb_t * const rgb, uint8_t s)
 {
     for(uint8_t idx = 0U; idx < num_leds; idx++)
     {
-        led_array[idx].rgb.r = r;
-        led_array[idx].rgb.g = g;
-        led_array[idx].rgb.b = b;
+        led_array[idx].rgb.r = rgb->r;
+        led_array[idx].rgb.g = rgb->g;
+        led_array[idx].rgb.b = rgb->b;
 
         LED_SetBrightness(idx, s);
     }
